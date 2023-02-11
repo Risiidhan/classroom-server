@@ -5,9 +5,6 @@ const allocClassroomModel = require('../models/allocate-classroom')
 
 module.exports.getAllocSubjects = async(req,res) =>{
     try {
-        // const allocClass = await allocClassroomModel.find();
-        // res.send(allocClass);
-
         const allocClass = await allocClassroomModel.aggregate([
             { $lookup:
                 {
@@ -43,6 +40,16 @@ module.exports.getAllocSubjects = async(req,res) =>{
 
 
 module.exports.addAllocClass = async(req,res)=>{
+
+  try {
+    let classNameCheck = await allocClassroomModel.findOne({classroomID:req.body.classroomID})
+    if(classNameCheck!=null){
+    return res.status(400).send('Classroom allocation already exists')
+    } 
+    } catch (error) {
+        res.status(400).json({err:error.message})
+    }
+
 
     let newSubject = new allocClassroomModel({
         teacherID: req.body.teacherID,

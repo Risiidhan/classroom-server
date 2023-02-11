@@ -50,6 +50,15 @@ module.exports.getSubjectByID = async(req,res)=>{
 
 module.exports.addAllocSubject = async(req,res)=>{
 
+    try {
+        let classNameCheck = await allocSubjectModel.findOne({subjectID:req.body.subjectID})
+        if(classNameCheck!=null){
+        return res.status(400).send('Subject allocation already exists')
+    } 
+    } catch (error) {
+        res.status(400).json({err:error.message})
+    }
+
     let newSubject = new allocSubjectModel({
         teacherID: req.body.teacherID,
         subjectID: req.body.subjectID,

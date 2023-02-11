@@ -12,6 +12,15 @@ module.exports.getTeachers = async(req,res)=>{
 }
 
 module.exports.addTeacher = async(req,res)=>{
+    try {
+        let classNameCheck = await teacherModel.findOne({email:req.body.email})
+        if(classNameCheck!=null){
+        return res.status(400).send('Teacher with this email already exists')
+    } 
+    } catch (error) {
+        res.status(400).json({err:error.message})
+    }
+
     let newTeacher = new teacherModel({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -48,6 +57,8 @@ module.exports.getTeacherById = async(req,res)=>{
 }
 
 module.exports.updateTeacher = async(req,res)=>{
+
+
     try {
         const teacher = await teacherModel.updateOne(
             {_id:req.params.id},

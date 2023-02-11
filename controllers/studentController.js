@@ -29,6 +29,15 @@ module.exports.getStudents = async(req,res)=>{
 
 
 module.exports.addStudent = async(req,res)=>{
+    try {
+        let classNameCheck = await studentModel.findOne({email:req.body.email})
+        if(classNameCheck!=null){
+        return res.status(400).send('Student with this email already exists')
+    } 
+    } catch (error) {
+        res.status(400).json({err:error.message})
+    }
+
     let newStudent = new studentModel({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -61,7 +70,6 @@ module.exports.deleteStudent = async(req,res)=>{
 
 module.exports.getStudentById = async(req,res)=>{
     try {
-        // const student = await studentModel.findById(req.params.id)
         const studentArr = await studentModel.aggregate([
             { $match :
                  { _id : new mongoose.Types.ObjectId(req.params.id)} 
@@ -87,6 +95,7 @@ module.exports.getStudentById = async(req,res)=>{
 }
 
 module.exports.updateStudent = async(req,res)=>{
+
     try {
         const student = await studentModel.updateOne(
             {_id:req.params.id},
